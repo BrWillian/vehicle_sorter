@@ -15,11 +15,17 @@ dir_train = '/home/willian/PycharmProjects/vizentec/modeldata/train'
 dir_val = '/home/willian/PycharmProjects/vizentec/modeldata/valid'
 dir_test = '/home/willian/PycharmProjects/vizentec/modeldata/test'
 
+IMG_SHAPE = (150, 150, 3)
+VGG19_MODEL = VGG19(input_shape=IMG_SHAPE, include_top=False, weights='imagenet')
+
+VGG19_MODEL.trainable = False
+global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
+prediction_layer = tf.keras.layers.Dense(6, activation='softmax')
 
 model = Sequential([
-    VGG19(input_shape=(150, 150, 3), include_top=False, weights='imagenet'),
-    tf.keras.layers.GlobalAveragePooling2D(),
-    tf.keras.layers.Dense(6, activation='softmax')
+    VGG19_MODEL,
+    global_average_layer,
+    prediction_layer
 ])
 
 
@@ -31,20 +37,17 @@ train_generator = train_datagen.flow_from_directory(
     dir_train,
     target_size=(150, 150),
     class_mode='categorical',
-    color_mode='rgb'
 )
 
 valid_generator = test_datagen.flow_from_directory(
     directory=dir_val,
     target_size=(150, 150),
     class_mode='categorical',
-    color_mode='rgb'
 )
 test_generator = test_datagen.flow_from_directory(
     directory=dir_test,
     target_size=(150, 150),
     class_mode='categorical',
-    color_mode='rgb'
 )
 
 for data_batch, label_batch in train_generator:
