@@ -25,6 +25,9 @@ prediction_layer = tf.keras.layers.Dense(6, activation='softmax')
 model = Sequential([
     VGG19_MODEL,
     global_average_layer,
+    tf.keras.layers.Dense(4096, activation='relu'),
+    tf.keras.layers.Dense(4096, activation='relu'),
+    tf.keras.layers.Dropout(0.3),
     prediction_layer
 ])
 
@@ -63,11 +66,16 @@ model.compile(optimizer='adam',
                loss='categorical_crossentropy',
                metrics=['accuracy'])
 
+
+train_size = train_generator.n
+valid_size = valid_generator.n
+test_size = test_generator.n
+
 history = model.fit_generator(train_generator,
-                              steps_per_epoch=100,
+                              steps_per_epoch=train_size/32,
                               epochs=100,
                               validation_data=valid_generator,
-                              validation_steps=50, callbacks=[callback])
+                              validation_steps=valid_size/32, callbacks=[callback])
 
 
 model_save = load_model('model_1.hdf5')
