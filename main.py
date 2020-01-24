@@ -14,13 +14,13 @@ dir_train = '/kaggle/input/iara-sixs/modeldata/train'
 dir_val = '/kaggle/input/iara-sixs/modeldata/valid'
 dir_test = '/kaggle/input/iara-sixs/modeldata/test'
 
-IMG_SHAPE = (128, 128, 3)
+IMG_SHAPE = (150, 150, 3)
 VGG19_MODEL = VGG19(input_shape=IMG_SHAPE, include_top=False, weights='imagenet')
 
 # VGG19_MODEL.trainable = True
 print(len(VGG19_MODEL.layers))
 
-for layer in VGG19_MODEL.layers[:-4]:
+for layer in VGG19_MODEL.layers[:-8]:
     layer.trainable = False
 
 for layer in VGG19_MODEL.layers:
@@ -42,20 +42,20 @@ test_datagen = ImageDataGenerator(rescale=1. / 255)
 
 train_generator = train_datagen.flow_from_directory(
     dir_train,
-    target_size=(128, 128),
+    target_size=(150, 150),
     class_mode='categorical',
     batch_size=100
 )
 
 valid_generator = test_datagen.flow_from_directory(
     directory=dir_val,
-    target_size=(128, 128),
+    target_size=(150, 150),
     class_mode='categorical',
     batch_size=100
 )
 test_generator = test_datagen.flow_from_directory(
     directory=dir_test,
-    target_size=(128, 128),
+    target_size=(150, 150),
     class_mode='categorical',
     batch_size=100
 )
@@ -68,6 +68,7 @@ callback = tf.keras.callbacks.ModelCheckpoint('/kaggle/working/bestmodel1.hdf5',
                                               save_best_only=True, verbose=1, mode='auto')
 
 Adam = tf.keras.optimizers.Adam(learning_rate=0.0001)
+RMSprop = tf.keras.optimizers.RMSprop(learning_rate=0.0001)
 model.compile(optimizer=Adam,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
@@ -78,19 +79,18 @@ train_size = train_generator.n
 valid_size = valid_generator.n
 test_size = test_generator.n
 
-history = model.fit_generator(train_generator, steps_per_epoch=train_size / 100, epochs=200,
-                              validation_data=valid_generator, validation_steps=valid_size / 100, callbacks=[callback])
+history = model.fit_generator(train_generator, epochs=200, validation_data=valid_generator, callbacks=[callback])
 
 model_save = load_model('/kaggle/working/bestmodel1.hdf5')
 
-loss, result = model_save.evaluate_generator(test_generator)
-print(result, loss)
+# loss, result = model_save.evaluate_generator(test_generator)
+# print(result, loss)
 
 
-plt.plot(history.history['accuracy'])
+"""plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
 plt.title('Accuracy / epochs')
 plt.xlabel('epochs')
 plt.ylabel('accuracy')
 plt.legend(['Train', 'Validadation'])
-plt.show()
+plt.show()"""
