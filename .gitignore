@@ -1,3 +1,6 @@
-modeldata/
+test/
+modeldata.zip
+images_data_augmentation/
 venv/
+modeldata/
 model_1.hdf5
