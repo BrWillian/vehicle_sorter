@@ -7,8 +7,7 @@ import os
 def generate_images(dir):
 
     datagen = ImageDataGenerator(
-        horizontal_flip=True,
-        channel_shift_range=150.0
+        horizontal_flip=True
     )
 
     try:
@@ -25,5 +24,8 @@ def generate_images(dir):
             i = 0
             for batch in datagen.flow(x, batch_size=1, save_to_dir='images_data_augmentation', save_prefix='aug', save_format='jpg'):
                 i += 1
-                if i > 2:
+                if i > 1:
                     break
+
+
+generate_images('/home/willian/PycharmProjects/vizentec/modeldata/valid/ao/')
